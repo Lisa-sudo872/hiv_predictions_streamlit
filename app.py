@@ -33,23 +33,11 @@ KNOWN_NRTI_DRMS = {
     "M41L","L210W","T215Y","T215F","K219Q","K219E"
 }
 
-TOP_UNKNOWN_MUTATIONS = {
-    "K122E": 2579,
-    "R211K": 2418,
-    "V118I": 1570,
-    "T200A": 1481,
-    "D177E": 1389,
-    "K103N": 1371,
-    "I135T": 1331,
-    "Q207E": 1243,
-    "D123E": 1200,
-    "F214L": 1153,
-    "G196E": 973,
-    "V60I": 899,
-    "Y181C": 768,
-    "K20R": 713,
-    "L228H": 712
-}
+TOP_UNKNOWN_MUTATIONS = ["K122E", "R211K", "V118I", "T200A", "D177E", "K103N", 
+               "I135T", "Q207E", "D123E", "F214L", "G196E", "V60I", 
+               "Y181C", "K20R", "L228H"]
+
+
 
 
 CROSS_EFFECTS_DETAILED = {
@@ -133,7 +121,8 @@ if st.button("Predict"):
 
     muts = list_mutations(seq)
     known = [m for m in muts if m in KNOWN_NRTI_DRMS]
-    unknown = [m for m in muts if m not in KNOWN_NRTI_DRMS]
+    rising_unknown = [m for m in unknown if m in TOP_UNKNOWN_MUTATIONS]
+
 
     rows=[]
     for drug,pred in zip(drug_labels, preds):
@@ -148,15 +137,15 @@ if st.button("Predict"):
     st.subheader("Known DRMs detected")
     st.markdown(mutation_notes(known))
 
-    st.subheader("❌ Top 15 unknown / rising mutations")
+    st.subheader("Rising mutations")
 
 mutation_table_md = "| Mutation | Count |\n|---|---|\n"
-for mut, count in TOP_UNKNOWN_MUTATIONS.items():
+for mut, count in TOP_UNKNOWN_MUTATIONS:
     mutation_table_md += f"| {mut} | {count} |\n"
 
 st.markdown(mutation_table_md)
 
-detected_unknown = [m for m in unknown if m in TOP_UNKNOWN_MUTATIONS]
+detected_unknown = [m for m in rising_unknown if m in TOP_UNKNOWN_MUTATIONS]
 if detected_unknown:
     st.markdown(f"**Detected unknown mutations in sequence:** {', '.join(detected_unknown)}")
 else:
