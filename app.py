@@ -87,8 +87,20 @@ st.markdown(
 """Paste an RT amino-acid sequence (100-240 aa).  
 The model predicts resistance to **3TC, ABC, D4T, AZT, DDI, TDF** and lists mutations."""
 )
+# Add example sequences dictionary (or list)
+examples = {
+    "Example 1 (All drugs)": "MLWQTKVTVLDVGDAYFSVPLDLEGKWRKLVDFRELNKRTQDFWEVQLGIPHPAGLKKKKSVTVLDVGDAYFSVPLDLEGKWRKLVDFRELNKRTQDFWEVQLGVKHPAGLKKKKSVTVLDVGDAYFSVPLDKDFRKYTAFTIPSINNETPGIRYQYNVL",
+    "Example 2 (3TC)": "PISPIETVPVKLKPGMDGPKVKQWPLTEEKIKALVEICTEMEKEGKISKIGPENPYNTPVFAIKKKDSTKWRKLVDDFRELNKRTQDFWEVQLGIPHPAGLKKKKSVTVLDVGDAYFSVPLDKDFRKYTAFTIPSINNETPGIRYQYNVL"
+}
 
-seq = st.text_area("RT sequence:", height=180, placeholder="PQITLWQRPLVTIKIGG...")
+st.sidebar.title("Load example sequence")
+selected_example = st.sidebar.selectbox("Choose an example sequence", options=["-- None --"] + list(examples.keys()))
+
+# Default sequence to empty string or chosen example
+default_seq = examples[selected_example] if selected_example != "-- None --" else ""
+
+# Use default_seq in the text area below
+seq = st.text_area("RT sequence:", height=180, value=default_seq, placeholder="PQITLWQRPLVTIKIGG...")
 filter_choice = st.multiselect("Show drugs:", drug_labels, default=drug_labels)
 
 if st.button("Predict"):
