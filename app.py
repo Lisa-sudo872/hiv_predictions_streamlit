@@ -141,7 +141,7 @@ if st.button("Predict"):
 
 mutation_table_md = "| Mutation | Count |\n|---|---|\n"
 for mut in TOP_UNKNOWN_MUTATIONS:
-    mutation_table_md += f"| {mut} | {count} |\n"
+    mutation_table_md += f"| {mut} |\n"
 
 st.markdown(mutation_table_md)
 
