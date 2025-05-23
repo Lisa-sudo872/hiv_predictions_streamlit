@@ -121,6 +121,7 @@ if st.button("Predict"):
 
     muts = list_mutations(seq)
     known = [m for m in muts if m in KNOWN_NRTI_DRMS]
+    unknown = [m for m in muts if m not in KNOWN_NRTI_DRMS]
     rising_unknown = [m for m in unknown if m in TOP_UNKNOWN_MUTATIONS]
 
 
