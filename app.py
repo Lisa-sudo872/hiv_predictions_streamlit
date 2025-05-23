@@ -121,7 +121,6 @@ if st.button("Predict"):
 
     muts = list_mutations(seq)
     known = [m for m in muts if m in KNOWN_NRTI_DRMS]
-    unknown = [m for m in muts if m not in KNOWN_NRTI_DRMS]
     rising_unknown = [m for m in unknown if m in TOP_UNKNOWN_MUTATIONS]
 
 
@@ -148,6 +147,6 @@ st.markdown(mutation_table_md)
 
 detected_unknown = [m for m in rising_unknown if m in TOP_UNKNOWN_MUTATIONS]
 if detected_unknown:
-    st.markdown(f"**Detected unknown mutations in sequence:** {', '.join(detected_unknown)}")
+    st.markdown(f"**Detected rising_unknown mutations in sequence:** {', '.join(detected_unknown)}")
 else:
-    st.markdown("No detected unknown mutations from the top 15 list.")
+    st.markdown("No detected rising_unknown mutations from the top 15 list.")
