@@ -119,33 +119,34 @@ if st.button("Predict"):
     X  = tfidf_vectorizer.transform([km])
     preds = boosters_predict(X)[0]
 
-    muts = list_mutations(seq)
-    known = [m for m in muts if m in KNOWN_NRTI_DRMS]
-    rising_unknown = [m for m in unknown if m in TOP_UNKNOWN_MUTATIONS]
+    # ---------- mutation analysis ----------
+muts   = list_mutations(seq)
+known  = [m for m in muts if m in KNOWN_NRTI_DRMS]
+rising = [m for m in muts if m in TOP_UNKNOWN_MUTATIONS]  # ← create `rising`
 
+# ---------- resistance table ----------
+rows = [
+    {"Drug": drug, "Resistance": res_labels[pred]}
+    for drug, pred in zip(drug_labels, preds)
+    if drug in filter_choice
+]
+st.subheader("Resistance predictions")
+st.dataframe(pd.DataFrame(rows).set_index("Drug"))
 
-    rows=[]
-    for drug,pred in zip(drug_labels, preds):
-        if drug not in filter_choice: continue
-        rows.append({
-            "Drug": drug,
-            "Resistance": res_labels[pred]
-        })
-    st.subheader("Resistance predictions")
-    st.dataframe(pd.DataFrame(rows).set_index("Drug"))
+# ---------- known DRMs ----------
+st.subheader("Known DRMs detected")
+st.markdown(mutation_notes(known))
 
-    st.subheader("Known DRMs detected")
-    st.markdown(mutation_notes(known))
-
-    st.subheader("Rising mutations")
-
-mutation_table_md = "| Mutation | Count |\n|---|---|\n"
+# ---------- rising mutations ----------
+st.subheader("Rising mutations")
+table_md = "| Mutation |\n|---|\n"
 for mut in TOP_UNKNOWN_MUTATIONS:
-    mutation_table_md += f"| {mut} |\n"
+    table_md += f"| {mut} |\n"
+st.markdown(table_md)
 
-st.markdown(mutation_table_md)
-
-if rising_unknown:
-    st.markdown(f"**Detected rising mutations in sequence:** {', '.join(rising)}")
+if rising:
+    st.markdown(
+        f"**Detected rising mutations in sequence:** {', '.join(rising)}"
+    )
 else:
-    st.markdown("No detected rising mutations from the top 15 list.")
+    st.markdown("No detected rising mutations from the top-15 list.")
