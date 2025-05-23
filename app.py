@@ -111,44 +111,39 @@ seq = st.text_area("RT sequence:", height=180, value=default_seq, placeholder="P
 filter_choice = st.multiselect("Show drugs:", drug_labels, default=drug_labels)
 
 if st.button("Predict"):
-    if len(re.sub(r"[^A-Za-z]","",seq)) < 100:
+    # --- validate and predict ---
+    if len(re.sub(r"[^A-Za-z]", "", seq)) < 100:
         st.error("Sequence must contain at least 100 amino acids.")
         st.stop()
 
-    km = kmers(re.sub(r"[^A-Za-z]","",seq.upper()))
-    X  = tfidf_vectorizer.transform([km])
+    km = kmers(re.sub(r"[^A-Za-z]", "", seq.upper()))
+    X = tfidf_vectorizer.transform([km])
     preds = boosters_predict(X)[0]
 
-    # ---------- mutation analysis ----------
-muts   = list_mutations(seq)
-known  = [m for m in muts if m in KNOWN_NRTI_DRMS]
-rising = [m for m in muts if m in TOP_UNKNOWN_MUTATIONS]  # ← create `rising`
+    # --- mutation analysis ---
+    muts = list_mutations(seq)
+    known = [m for m in muts if m in KNOWN_NRTI_DRMS]
+    rising = [m for m in muts if m in TOP_UNKNOWN_MUTATIONS]
 
-# ---------- resistance table ----------
-rows=[]
-    for drug,pred in zip(drug_labels, preds):
-        if drug not in filter_choice: continue
-        rows.append({
-            "Drug": drug,
-            "Resistance": res_labels[pred]
-        })
+    # --- resistance table ---
+    rows = [
+        {"Drug": drug, "Resistance": res_labels[pred]}
+        for drug, pred in zip(drug_labels, preds)
+        if drug in filter_choice
+    ]
     st.subheader("Resistance predictions")
     st.dataframe(pd.DataFrame(rows).set_index("Drug"))
 
+    # --- known DRMs ---
     st.subheader("Known DRMs detected")
     st.markdown(mutation_notes(known))
 
+    # --- rising mutations ---
+    st.subheader("Rising mutations")
+    if rising:
+        st.markdown(
+            f"**Detected rising mutations in sequence:** {', '.join(rising)}"
+        )
+    else:
+        st.markdown("No rising mutations from the top-15 list detected in this sequence.")
 
-# ---------- rising mutations ----------
-st.subheader("Rising mutations")
-table_md = "| Mutation |\n|---|\n"
-for mut in TOP_UNKNOWN_MUTATIONS:
-    table_md += f"| {mut} |\n"
-st.markdown(table_md)
-
-if rising:
-    st.markdown(
-        f"**Detected rising mutations in sequence:** {', '.join(rising)}"
-    )
-else:
-    st.markdown("No detected rising mutations from the top-15 list.")
