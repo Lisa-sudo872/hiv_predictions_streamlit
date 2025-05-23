@@ -33,6 +33,13 @@ KNOWN_NRTI_DRMS = {
     "M41L","L210W","T215Y","T215F","K219Q","K219E"
 }
 
+TOP_UNKNOWN_MUTATIONS = {
+    "K122E", "R211K", "V118I", "T200A", "D177E",
+    "K103N", "I135T", "Q207E", "D123E", "F214L",
+    "G196E", "V60I", "Y181C", "K20R", "L228H"
+}
+
+
 CROSS_EFFECTS_DETAILED = {
     "M184V":{"effect":"↑ AZT & TDF susceptibility; 3TC resistance",
              "clinical":"Keep AZT/TDF despite 3TC failure."},
@@ -129,5 +136,16 @@ if st.button("Predict"):
     st.subheader("Known DRMs detected")
     st.markdown(mutation_notes(known))
 
-    st.subheader("Other mutations")
-    st.markdown(", ".join(unknown) if unknown else "None")
+    st.subheader("❌ Top 15 unknown / rising mutations")
+
+mutation_table_md = "| Mutation | Count |\n|---|---|\n"
+for mut, count in TOP_UNKNOWN_MUTATIONS.items():
+    mutation_table_md += f"| {mut} | {count} |\n"
+
+st.markdown(mutation_table_md)
+
+detected_unknown = [m for m in unknown if m in TOP_UNKNOWN_MUTATIONS]
+if detected_unknown:
+    st.markdown(f"**Detected unknown mutations in sequence:** {', '.join(detected_unknown)}")
+else:
+    st.markdown("No detected unknown mutations from the top 15 list.")
