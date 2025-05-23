@@ -145,8 +145,7 @@ for mut in TOP_UNKNOWN_MUTATIONS:
 
 st.markdown(mutation_table_md)
 
-detected_unknown = [m for m in rising_unknown if m in TOP_UNKNOWN_MUTATIONS]
-if detected_unknown:
-    st.markdown(f"**Detected rising_unknown mutations in sequence:** {', '.join(detected_unknown)}")
+if rising:
+    st.markdown(f"**Detected rising mutations in sequence:** {', '.join(rising)}")
 else:
-    st.markdown("No detected rising_unknown mutations from the top 15 list.")
+    st.markdown("No detected rising mutations from the top 15 list.")
