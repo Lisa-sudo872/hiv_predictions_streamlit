@@ -125,17 +125,19 @@ known  = [m for m in muts if m in KNOWN_NRTI_DRMS]
 rising = [m for m in muts if m in TOP_UNKNOWN_MUTATIONS]  # ← create `rising`
 
 # ---------- resistance table ----------
-rows = [
-    {"Drug": drug, "Resistance": res_labels[pred]}
-    for drug, pred in zip(drug_labels, preds)
-    if drug in filter_choice
-]
-st.subheader("Resistance predictions")
-st.dataframe(pd.DataFrame(rows).set_index("Drug"))
+rows=[]
+    for drug,pred in zip(drug_labels, preds):
+        if drug not in filter_choice: continue
+        rows.append({
+            "Drug": drug,
+            "Resistance": res_labels[pred]
+        })
+    st.subheader("Resistance predictions")
+    st.dataframe(pd.DataFrame(rows).set_index("Drug"))
 
-# ---------- known DRMs ----------
-st.subheader("Known DRMs detected")
-st.markdown(mutation_notes(known))
+    st.subheader("Known DRMs detected")
+    st.markdown(mutation_notes(known))
+
 
 # ---------- rising mutations ----------
 st.subheader("Rising mutations")
