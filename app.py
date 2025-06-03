@@ -2,6 +2,23 @@ import streamlit as st
 import joblib, numpy as np, pandas as pd, xgboost as xgb, re
 from scipy import sparse
 
+from supabase import create_client, Client
+
+# My Supabase project credentials
+SUPABASE_URL = "https://whmmzuuslbynoimdhxhb.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobW16dXVzbGJ5bm9pbWRoeGhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NjE0MjQsImV4cCI6MjA2NDUzNzQyNH0.odBAEMh3RoZI9lC3OIVjwRWe2vZyRwnqzH237nIBVwk"
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def log_to_supabase(sequence, drug, resistance, known, rising):
+    supabase.table("predictions").insert({
+        "input_sequence": sequence,
+        "drug": drug,
+        "resistance_label": resistance,
+        "known_mutations": known,
+        "rising_mutations": rising
+    }).execute()
+
 # ─────────────────────────────── Load artefacts ───────────────────────────────
 tfidf_vectorizer = joblib.load("tfidf_vectorizer_fixed.pkl")
 
@@ -131,6 +148,16 @@ if st.button("Predict"):
         for drug, pred in zip(drug_labels, preds)
         if drug in filter_choice
     ]
+    # Log each drug’s prediction to Supabase
+    for drug, pred in zip(drug_labels, preds):
+        if drug in filter_choice:
+            log_to_supabase(
+                sequence=seq,
+                drug=drug,
+                resistance=res_labels[pred],
+                known=known,
+                rising=rising
+            )
     st.subheader("Resistance predictions")
     st.dataframe(pd.DataFrame(rows).set_index("Drug"))
 
