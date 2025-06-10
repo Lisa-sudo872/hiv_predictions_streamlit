@@ -19,7 +19,7 @@ def log_to_supabase(sequence, drug, resistance, known, rising):
     }).execute()
 
 # ─────────────────────────────── Load artefacts ───────────────────────────────
-tfidf_vectorizer = joblib.load("tfidf_vectorizer_fixed.pkl")
+tfidf_vectorizer = joblib.load("tfidf_vectorizer.pkl")
 
 boosters = []
 for i in range(6):                         # boosters 0-5 : 3TC … TDF
