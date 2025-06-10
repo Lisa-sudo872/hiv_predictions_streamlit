@@ -5,8 +5,10 @@ from scipy import sparse
 from supabase import create_client, Client
 
 # My Supabase project credentials
-SUPABASE_URL = secrets.toml["SUPABASE_URL"]
-SUPABASE_KEY = secrets.toml["SUPABASE_KEY"]
+
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def log_to_supabase(sequence, drug, resistance, known, rising):
