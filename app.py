@@ -4,21 +4,10 @@ from scipy import sparse
 
 from supabase import create_client, Client
 
-# My Supabase project credentials
+# My Supabase
 
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-def log_to_supabase(sequence, drug, resistance, known, rising):
-    supabase.table("predictions").insert({
-        "input_sequence": sequence,
-        "drug": drug,
-        "resistance_label": resistance,
-        "known_mutations": known,
-        "rising_mutations": rising
-    }).execute()
+    
 
 # ─────────────────────────────── Load artefacts ───────────────────────────────
 tfidf_vectorizer = joblib.load("tfidf_vectorizer.pkl")
